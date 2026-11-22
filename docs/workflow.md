@@ -59,6 +59,8 @@ flowchart LR
    After the checks pass, CI publishes the images to GHCR (`:develop`, `:stable`,
    `:vX.Y.Z`, amd64 + arm64), so `ditx up -r white --pull` updates a robot. A version that is
    not published (a feature branch) is built on the robot instead (tutorial 14).
+   A weekly job (`ghcr-cleanup.yml`) keeps `develop`, `stable`, every `vX.Y.Z` and the 10 newest
+   `sha-*` tags per image, and deletes the rest.
 5. Pin the domain versions in `ditx.repos` on the release commit. Shell tag + that file
    = the whole robot software, reproducible.
 
