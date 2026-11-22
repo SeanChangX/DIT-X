@@ -60,13 +60,13 @@ jobs:
       DOMAIN: ${{ inputs.domain }}
     steps:
       - name: Checkout shell (SeanChangX/DIT-X @ ${{ inputs.shell-ref }})
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: SeanChangX/DIT-X
           ref: ${{ inputs.shell-ref }}
           token: ${{ secrets.DIT_SYNC_TOKEN || github.token }}
       - name: Checkout this domain into domains/${{ inputs.domain }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: domains/${{ inputs.domain }}
       - name: Sync the other domains
@@ -79,16 +79,16 @@ jobs:
           others=$(sed -n 's|^  domains/\([^:]*\):.*|\1|p' ditx.repos | grep -vx "$DOMAIN" || true)
           # shellcheck disable=SC2086
           [[ -z "$others" ]] || bin/ditx sync $others
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       # buildx's type=gha cache needs the Actions runtime token, which only JS actions get
-      - uses: crazy-max/ghaction-github-runtime@v3
+      - uses: crazy-max/ghaction-github-runtime@v4
       - run: bin/ditx image --target dev --tag ci
       - run: bin/ditx ci lint -d "$DOMAIN"
       - run: bin/ditx ci build
       - run: bin/ditx ci test
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ inputs.domain }}
           path: |
