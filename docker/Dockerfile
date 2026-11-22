@@ -69,7 +69,6 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
 ######################## base: what every robot runs on ########################
 FROM ros AS base
 COPY --from=base-build /opt/eurobot/base /opt/eurobot/base
-LABEL org.opencontainers.image.source="https://github.com/SeanChangX/DIT-X"
 USER dit
 
 #################### manifests: only package.xml of domains ####################

@@ -2072,6 +2072,7 @@ def cmd_image(ws, args):
         'PLATFORMS': args.platforms,
         'DOMAINS': ' '.join(domains),
         'EXTRA_TAGS': getattr(args, 'extra_tags', '') or '',
+        'REVISION': ws.git(ws.root, 'rev-parse', 'HEAD'),  # OCI revision label
     }
     multi = ',' in args.platforms
     if multi and not args.push:
