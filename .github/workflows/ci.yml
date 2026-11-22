@@ -104,14 +104,34 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
-      - uses: ./.github/actions/setup
+          fetch-depth: 0   # the scope check diffs against the previous commit of the push
+      # A develop push that only touches docs (docs/, mkdocs.yml, *.md) cannot change an
+      # image: skip the rebuild. main and release tags always publish; when the previous
+      # commit is unknown (new branch, force push) it publishes too.
+      - name: Scope
+        id: scope
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          publish=true
+          if [[ "$GITHUB_REF" == refs/heads/develop ]] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
+             && ! git diff --name-only "$BEFORE" "$GITHUB_SHA" | grep -qvE '^(docs/|mkdocs\.yml$)|\.md$'; then
+            publish=false
+            echo "::notice::docs-only push: images not rebuilt"
+          fi
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+      - if: steps.scope.outputs.publish == 'true'
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - if: steps.scope.outputs.publish == 'true'
+        uses: ./.github/actions/setup
         with:
           sync-token: ${{ secrets.DIT_SYNC_TOKEN }}
           build-dev-image: none
-      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+      - if: steps.scope.outputs.publish == 'true'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: bin/ditx ci image
+      - if: steps.scope.outputs.publish == 'true'
+        run: bin/ditx ci image
