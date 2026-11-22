@@ -32,13 +32,13 @@ git --version
 ```
 
 !!! tip "建議：使用 containerd image store"
-    Docker Engine 29 起，**新安裝**的 Docker 預設使用 containerd image store；從舊版升級上來的則仍是傳統的 overlay2。執行下列指令檢查，看到 `io.containerd.snapshotter.v1` 就代表已在使用：
+    照上面的 Docker 官方文件**新安裝** Docker Engine 29 以上版本，預設就是 containerd image store，**不需要任何操作**。只有從舊版升級上來的 Docker，或 Ubuntu 套件庫的 `docker.io`（版本較舊），才會是傳統的 overlay2。執行下列指令檢查，看到 `io.containerd.snapshotter.v1` 就代表已在使用，可以略過這段：
 
     ```bash
     docker info -f '{{ .DriverStatus }}'
     ```
 
-    傳統儲存方式的一個 tag 只能存放一種架構，containerd image store 則能同時存放 amd64 與 arm64（多架構 image），也是 Docker 官方建議的方向。`ditx` 在兩種儲存方式下都能正常使用；但如果你經常處理 ARM（Jetson、Raspberry Pi、`ditx shell --arch arm64`），建議切換：
+    若顯示的是 overlay2：傳統儲存方式的一個 tag 只能存放一種架構，containerd image store 則能同時存放 amd64 與 arm64（多架構 image），也是 Docker 官方建議的方向。`ditx` 在兩種儲存方式下都能正常使用；但如果你經常處理 ARM（Jetson、Raspberry Pi、`ditx shell --arch arm64`），建議切換：
 
     ```bash
     docker image prune -af   # 切換後舊 image 會被隱藏但仍佔空間，先清掉（之後會自動重新 pull）
