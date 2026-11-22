@@ -437,11 +437,52 @@ def parse_jobs(jobs='auto', workers='auto'):
     return w, j, mem
 
 
-def ensure_image(image, args, label='dev image', target='dev'):
+def image_arch(ref):
+    """Architecture of a local image, or '' when it is not present."""
+    r = subprocess.run(
+        ['docker', 'image', 'inspect', '--format', '{{.Architecture}}', ref],
+        capture_output=True,
+        text=True,
+    )
+    return r.stdout.strip() if r.returncode == 0 else ''
+
+
+def platform_digest(image, arch):
+    """Digest of the linux/<arch> image inside a published multi-arch image, or None."""
+    r = subprocess.run(
+        ['docker', 'buildx', 'imagetools', 'inspect', '--raw', image],
+        capture_output=True,
+        text=True,
+    )
+    if r.returncode:
+        return None
+    try:
+        manifests = json.loads(r.stdout).get('manifests', [])
+    except ValueError:
+        return None
+    for m in manifests:
+        p = m.get('platform', {})
+        if p.get('os') == 'linux' and p.get('architecture') == arch:
+            return m['digest']
+    return None
+
+
+def ensure_image(image, args, label='dev image', target='dev', arch=None):
+    """Make `image` runnable for `arch` (default: this machine) and return the ref to run.
+
+    The local docker image store keeps one architecture per tag, and `docker run --platform`
+    pulls a missing variant over the tag. A foreign arch (qemu) therefore gets its own tag,
+    <image>-<arch>, pulled by digest; the native tag is repaired if something replaced it."""
+    arch = arch or native_arch()
+    if arch != native_arch():
+        return ensure_foreign_image(image, args, label, target, arch)
     if getattr(args, 'dry_run', False):
-        return
-    if subprocess.run(['docker', 'image', 'inspect', image], capture_output=True).returncode == 0:
-        return
+        return image
+    have = image_arch(image)
+    if have == arch:
+        return image
+    if have and not image.endswith(':local'):
+        ui.warn(f'{image} here is {have}, not {arch} (pulled for emulation?): pulling {arch}')
     if image.endswith(':local'):  # built on this machine, never in a registry
         raise Fail(
             f'{label} {image} is not built yet  → ditx image --target {target}  '
@@ -449,7 +490,7 @@ def ensure_image(image, args, label='dev image', target='dev'):
         )
     with ui.Task(label) as t:
         t.status(f'pulling {image}')
-        if run(['docker', 'pull', image], check=False).returncode:
+        if run(['docker', 'pull', '--platform', f'linux/{arch}', image], check=False).returncode:
             t.fail('not available')
             raise Fail(
                 f'image {image} not available.\n'
@@ -457,6 +498,30 @@ def ensure_image(image, args, label='dev image', target='dev'):
                 f'  (or log in to the registry that publishes it: docker login)'
             )
         t.done(f'pulled {image}')
+    return image
+
+
+def ensure_foreign_image(image, args, label, target, arch):
+    """<image>-<arch> for emulation: the published linux/<arch> image, pulled by digest so the
+    native tag never changes."""
+    ref = f'{image}-{arch}'
+    if getattr(args, 'dry_run', False) or image_arch(ref) == arch:
+        return ref
+    if image.endswith(':local'):
+        raise Fail(
+            f'{label} {ref} is not built yet  → ditx image --target {target} '
+            f'--platforms linux/{arch} --tag local-{arch}  (slow: built under qemu)'
+        )
+    with ui.Task(f'{label} ({arch})') as t:
+        t.status(f'pulling the linux/{arch} image of {image}')
+        digest = platform_digest(image, arch)
+        repo = image.rsplit(':', 1)[0]
+        if not digest or run(['docker', 'pull', f'{repo}@{digest}'], check=False).returncode:
+            t.fail('not available')
+            raise Fail(f'{image} has no linux/{arch} image (or the registry is unreachable)')
+        run(['docker', 'tag', f'{repo}@{digest}', ref], check=False)
+        t.done(f'pulled {ref}')
+    return ref
 
 
 def cross_compiles(arch):
@@ -485,12 +550,15 @@ def dev_run(
     cross = cross_compiles(arch) and not emulate
     image, label = (ws.cross_image(), 'cross image') if cross else (ws.dev_image(), 'dev image')
     if getattr(args, 'dry_run', False) and plan is not None:
-        ui.planned(label, image + (f' · RAM cap {mem_gb} GB' if mem_gb else ''))
+        shown = image if cross or arch == native_arch() else f'{image}-{arch}'  # ensure_image
+        ui.planned(label, shown + (f' · RAM cap {mem_gb} GB' if mem_gb else ''))
         for label, what in plan:
             ui.planned(label, what)
         if not ui.VERBOSE:
             return subprocess.CompletedProcess([], 0, '', '')
-    ensure_image(image, args, label, 'cross' if cross else 'dev')
+    image = ensure_image(
+        image, args, label, 'cross' if cross else 'dev', arch=None if cross else arch
+    )
     cmd = ['docker', 'run', '--rm', '--init', '--network', 'host', '--ipc', 'host']
     cmd += ['--user', f'{os.getuid()}:{os.getgid()}', '-e', 'HOME=/tmp/dit-home']
     cmd += ['-e', f'DIT_ROOT={ws.root}', '-e', 'CCACHE_DIR=/ccache', '-e', 'PYTHONUNBUFFERED=1']
@@ -602,7 +670,14 @@ def check_dev_deps(ws, args, arch, domains):
         # dependency someone merged since. Fetch the current one and check again.
         with ui.Task('dev image') as t:
             t.status(f'pulling {image} (this copy lacks dependencies; develop may have them)')
-            pulled = run(['docker', 'pull', image], args, check=False).returncode == 0
+            pulled = (
+                run(
+                    ['docker', 'pull', '--platform', f'linux/{native_arch()}', image],
+                    args,
+                    check=False,
+                ).returncode
+                == 0
+            )
             if pulled:
                 t.done(f'pulled {image}')
             else:
@@ -2238,7 +2313,7 @@ def cmd_doctor(ws, args):
         'arm64 emulation (qemu binfmt)',
         os.path.exists('/proc/sys/fs/binfmt_misc/qemu-aarch64'),
         'optional, only `ditx shell --arch arm64` needs it:\n'
-        '      docker run --privileged --rm tonistiigi/binfmt --install arm64',
+        '      sudo apt install qemu-user-static',
         warn_only=True,
     )
     mine = os.path.realpath(os.path.join(ws.root, 'bin', 'ditx'))
@@ -2282,13 +2357,13 @@ def cmd_doctor(ws, args):
         ui.info(f'build budget: {workers} colcon workers x make -j{mj}, container RAM cap {mem} GB')
     img = ws.dev_image()
     local = img.endswith(':local')
-    have = ok_cmd('docker', 'image', 'inspect', img)
+    arch = image_arch(img)
+    have = arch == native_arch()
+    note = '' if have else f' (is {arch}, not {native_arch()})' if arch else ' (not pulled yet)'
     check(
-        f'dev image {img}' + ('' if have or local else ' (not pulled yet)'),
+        f'dev image {img}{note}',
         have,
-        'ditx image --target dev'
-        if local
-        else 'ditx build pulls it the first time (or: docker pull)',
+        'ditx image --target dev' if local else 'ditx build pulls it (or: docker pull)',
         warn_only=not local,  # a published image is pulled on demand
     )
     check(
@@ -2426,7 +2501,7 @@ def cmd_init(ws, args):
         return
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
-    ui.ok(f'.env: set {", ".join(changed)}; next: ditx sync && ditx image && ditx build')
+    ui.ok(f'.env: set {", ".join(changed)}; next: ditx sync && ditx build')
 
 
 def cmd_tui(ws, args):

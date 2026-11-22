@@ -114,7 +114,7 @@ ditx build --arch arm64 -d localization
     - sysroot 由 `docker/cross/make-sysroot.sh` 建立：直接下載 arm64 的 .deb 並解開，過程中不執行任何 arm64 程式，因此建 image 也不需要 qemu。
     - `docker/cross/aarch64.cmake` 是 CMake toolchain file，讓 colcon 使用 aarch64 編譯器，並從 sysroot 尋找標頭檔與函式庫。
     - arm64 機器人的 runtime image 在機器人上原生建置（第 3 步），同樣不需要 qemu。
-    - 只有 `ditx shell --arch arm64`（實際執行 arm64 程式）需要 qemu，`ditx doctor` 會列出安裝方式。
+    - 只有 `ditx shell --arch arm64`（實際執行 arm64 程式）需要 qemu：Ubuntu/Debian 執行 `sudo apt install qemu-user-static`（重開機後仍有效）；其他系統可用 `docker run --privileged --rm tonistiigi/binfmt --install arm64`（重開機後需重跑）。它使用另一個 tag（例如 `eurobot-dev:develop-arm64`），不會覆蓋本機 amd64 的 `:develop`。
 
 ## 摘要
 
