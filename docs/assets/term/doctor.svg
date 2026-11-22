@@ -60,7 +60,7 @@
 <text x="26.4" y="263.5" textLength="33.6" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> git</text>
 <text x="18" y="281.7" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-12">!</text>
 <text x="26.4" y="281.7" textLength="705.6" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> arm64 emulation (qemu binfmt)  → optional, only `ditx shell --arch arm64` needs it:</text>
-<text x="18" y="299.9" textLength="588" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1">        sudo apt install qemu-user-static</text>
+<text x="18" y="299.9" textLength="344.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1">        sudo apt install qemu-user-static</text>
 <text x="18" y="318.1" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-11">✓</text>
 <text x="26.4" y="318.1" textLength="109.2" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> ditx on PATH</text>
 <text x="18" y="336.3" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-12">!</text>
@@ -69,7 +69,7 @@
 <text x="26.4" y="354.5" textLength="512.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> disk: 13 GB free  → a bit tight: images + builds want ~20 GB</text>
 <text x="34.8" y="372.7" textLength="554.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-10">build budget: 3 colcon workers x make -j5, container RAM cap 24 GB</text>
 <text x="18" y="390.9" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-11">✓</text>
-<text x="26.4" y="390.9" textLength="394.8" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> dev image ghcr.io/seanchangx/eurobot-dev:develop</text>
+<text x="26.4" y="390.9" textLength="411.6" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> dev image ghcr.io/seanchangx/eurobot-dev:develop</text>
 <text x="18" y="409.1" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t4fc56a-13">✗</text>
 <text x="26.4" y="409.1" textLength="285.6" lengthAdjust="spacingAndGlyphs" class="t4fc56a-1"> domains synced: none  → ditx sync</text>
 </g>
