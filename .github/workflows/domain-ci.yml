@@ -60,14 +60,16 @@ jobs:
       DOMAIN: ${{ inputs.domain }}
     steps:
       - name: Checkout shell (SeanChangX/DIT-X @ ${{ inputs.shell-ref }})
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           repository: SeanChangX/DIT-X
           ref: ${{ inputs.shell-ref }}
           token: ${{ secrets.DIT_SYNC_TOKEN || github.token }}
       - name: Checkout this domain into domains/${{ inputs.domain }}
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           path: domains/${{ inputs.domain }}
       - name: Sync the other domains
         env:
@@ -79,16 +81,16 @@ jobs:
           others=$(sed -n 's|^  domains/\([^:]*\):.*|\1|p' ditx.repos | grep -vx "$DOMAIN" || true)
           # shellcheck disable=SC2086
           [[ -z "$others" ]] || bin/ditx sync $others
-      - uses: docker/setup-buildx-action@v4
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       # buildx's type=gha cache needs the Actions runtime token, which only JS actions get
-      - uses: crazy-max/ghaction-github-runtime@v4
+      - uses: crazy-max/ghaction-github-runtime@04d248b84655b509d8c44dc1d6f990c879747487 # v4.0.0
       - run: bin/ditx image --target dev --tag ci
       - run: bin/ditx ci lint -d "$DOMAIN"
       - run: bin/ditx ci build
       - run: bin/ditx ci test
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-results-${{ inputs.domain }}
           path: |

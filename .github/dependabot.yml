@@ -1,11 +1,16 @@
 # One PR a month that bumps the GitHub Actions used by CI, so a deprecated action
 # version never turns CI red out of the blue. Robot code is not touched.
+# Actions are pinned to full commit SHAs (`# vX.Y.Z` comments): Dependabot moves the SHA
+# and the comment together. The cooldown skips releases younger than 7 days, so a
+# freshly published (possibly compromised) version is never pulled in the day it appears.
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    directories: ["/", "/.github/actions/*"]   # workflows + the shared composite actions
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: ci
     groups:
