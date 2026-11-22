@@ -580,8 +580,9 @@ def check_dev_deps(ws, args, arch, domains):
 
     The dev image installs the rosdep keys of the domains it was built from. A pulled
     image (DIT_DEV_TAG=develop) predates a package.xml change on your branch; colcon
-    would then fail with an obscure "could not find package". Images older than the
-    readable rosdep cache skip the check."""
+    would then fail with an obscure "could not find package". A published image that
+    fails the check is pulled again first (develop may have the dependency by now).
+    Images older than the readable rosdep cache skip the check."""
     if cross_compiles(arch) or not domains:
         return
     paths = ' '.join(shlex.quote(p) for p in [f'{ws.root}/base', *map(ws.domain_path, domains)])
@@ -591,15 +592,25 @@ def check_dev_deps(ws, args, arch, domains):
         f'ROS_HOME=$H rosdep check --rosdistro $ROS_DISTRO --ignore-src -q --from-paths {paths}'
         ' 2>&1'
     )
-    r = dev_run(
-        ws,
-        args,
-        script,
-        arch=arch,
-        plan=[('deps', 'would check the dev image has every rosdep key')],
-    )
+    plan = [('deps', 'would check the dev image has every rosdep key')]
+    r = dev_run(ws, args, script, arch=arch, plan=plan)
     if r.returncode == 0:
         return
+    image = ws.dev_image()
+    if not image.endswith(':local'):
+        # ditx pulls a published image only when it is missing: the copy here may predate the
+        # dependency someone merged since. Fetch the current one and check again.
+        with ui.Task('dev image') as t:
+            t.status(f'pulling {image} (this copy lacks dependencies; develop may have them)')
+            pulled = run(['docker', 'pull', image], args, check=False).returncode == 0
+            if pulled:
+                t.done(f'pulled {image}')
+            else:
+                t.fail('pull failed')
+        if pulled:
+            r = dev_run(ws, args, script, arch=arch, plan=plan)
+            if r.returncode == 0:
+                return
     missing = [x for x in (r.stdout or '').splitlines() if x.strip()][-12:]
     build = 'ditx image --target dev'
     fix = (

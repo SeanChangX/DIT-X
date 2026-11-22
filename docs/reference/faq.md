@@ -27,7 +27,7 @@
     不需要修改 Dockerfile 或相依套件時，刪掉 `.env` 中的 `DIT_DEV_TAG`，改用 CI 發佈的 image。
 
 ??? question "`the dev image ... lacks dependencies of this checkout`"
-    你的分支新增了相依套件，但 CI 發佈的 dev image 是依照 `develop` 建置的，還沒有這些套件。改用自己建置的 image：
+    `ditx build` 會先自動 pull 最新的 dev image 再檢查一次（別人合併的相依套件，新的 image 可能已經有了）。仍然出現這個訊息，代表是你的分支新增了相依套件，而 CI 發佈的 dev image 是依照 `develop` 建置的，還沒有這些套件。改用自己建置的 image：
 
     ```bash
     ditx image --target dev
