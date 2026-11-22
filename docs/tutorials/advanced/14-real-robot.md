@@ -65,9 +65,11 @@ sudo infra/robot/install.sh
 - 請先修改 `infra/robot/udev/` 中的序號預留位置，`/dev/dit-lidar` 這類固定裝置名稱才會生效。
 - **務必安裝 chrony**：多台電腦的日誌時間戳記必須一致。
 
-### 3. 在機器人上建置 image
+### 3. 準備機器人的 image
 
-CI 不發佈 image，因此機器人執行的 image 在機器人上建置。arm64 機器人也是如此，在機器人上原生建置，不需要 qemu。在**機器人上**，於第 2 步的 shell repo 中執行：
+CI 會把 runtime image 發佈到 GHCR（`main` → `:stable`、`develop` → `:develop`、release tag → `:vX.Y.Z`，amd64 與 arm64 都有），所以機器人可以直接 pull，不必建置：從你的電腦執行 `ditx up -r white --pull` 即可。
+
+若要執行還沒發佈的版本（例如自己的分支），才在機器人上自行建置。arm64 機器人也是在機器人上原生建置，不需要 qemu。在**機器人上**，於第 2 步的 shell repo 中執行：
 
 ```bash
 git switch main && git pull     # 比賽用 main（tag = stable）；測試機可用 develop

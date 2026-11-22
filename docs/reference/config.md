@@ -74,8 +74,8 @@ tag = stable
 # Defaults for ditx. Copy to .env (git-ignored) or run `ditx init` to change them.
 ROS_DISTRO=humble
 REGISTRY=ghcr.io/seanchangx
-# dev image tag: local = built on this machine by `ditx image` (CI publishes no images;
-# set a registry tag here only once a registry publishes them)
+# dev image tag: local = built on this machine by `ditx image`; develop = pull the image
+# CI publishes to GHCR from the develop branch (no local build)
 DIT_DEV_TAG=local
 # robot used when -r is not given
 DIT_ROBOT=sim
@@ -89,7 +89,7 @@ DIT_ROBOT_USER=main
 |---|---|---|
 | `ROS_DISTRO` | `humble` | `humble`（機器人使用的版本）或 `jazzy`（未來支援） |
 | `REGISTRY` | `ghcr.io/seanchangx` | image 名稱的前綴（目前 image 只在本機建置，不會下載） |
-| `DIT_DEV_TAG` | `local` | dev 與 cross image 的 tag；`local` 表示在本機以 `ditx image` 建置。只有在改用會發佈 image 的 registry 後才需要修改 |
+| `DIT_DEV_TAG` | `local` | dev 與 cross image 的 tag；`local` 表示在本機以 `ditx image` 建置。CI 會把 image 發佈到 GHCR（`develop`、`stable`、`vX.Y.Z`），設成 `develop` 就改為直接 pull，不必在本機建置 |
 | `DIT_DEV_IMAGE` | | 直接指定完整的 dev image 名稱（覆寫上述兩項） |
 | `DIT_ROBOT` | `sim` | 未指定 `-r` 時使用的機器人 |
 | `DIT_ROBOT_USER` | `main` | 你在機器人上的帳號，也就是你的小組（`main`、`navigation`、`localization`、`vision`）；`robots.ini` 中沒寫帳號的 DIT 機器人都用它登入 |

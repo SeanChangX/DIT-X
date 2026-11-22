@@ -98,7 +98,7 @@ CI 依序執行：PR 標題檢查 → `lint` → `build-test`（Humble 必須通
 
 ### 6. 合併之後
 
-CI 只負責檢查，合併後不會發佈 image。要讓機器人執行新版本，請在機器人上重新建置 image（見 [14](../advanced/14-real-robot.md) 第 3 步），再執行 `ditx up -r <robot>`。
+合併到 `develop` 或 `main` 後，CI 會在檢查通過後把 image 發佈到 GHCR（`:develop`、`:stable`）。要讓機器人執行新版本，執行 `ditx up -r <robot> --pull` 即可（見 [14](../advanced/14-real-robot.md) 第 3 步）。
 
 ## 摘要
 

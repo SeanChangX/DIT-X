@@ -49,11 +49,14 @@ ditx list
 
 ### 2. 準備 image
 
-所有 image 都在你的電腦上建置（CI 只負責檢查，不發佈 image）。第一次執行約需 5–10 分鐘，之後只有 Dockerfile 或相依套件改變時才需要重建：
+image 可以在你的電腦上建置，第一次約需 5–10 分鐘，之後只有 Dockerfile 或相依套件改變時才需要重建：
 
 ```bash
 ditx image          # 建 base、dev、cross 與 4 個 domain 的 runtime image（tag: local）
 ```
+
+!!! tip "不想在本機建置"
+    CI 會把 `develop` 的 image 發佈到 GHCR。在 `.env` 設定 `DIT_DEV_TAG=develop`，`ditx build` 就會直接 pull dev image，不必執行 `ditx image`。修改 Dockerfile 或相依套件時，仍需改回 `local` 並在本機建置。
 
 ```text
 ▸ images  humble · linux/amd64 → ghcr.io/seanchangx/eurobot-*:local

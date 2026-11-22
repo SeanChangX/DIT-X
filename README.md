@@ -39,7 +39,7 @@ git clone https://github.com/SeanChangX/DIT-X.git && cd DIT-X
 ditx init                  # your team account on the robots, default robot, ROS distro
 ditx doctor                # checks docker, disk, RAM budget, install, robots
 ditx sync                  # clone the domain repos into domains/
-ditx image                 # build the images on this machine (CI publishes none), ~5-10 min once
+ditx image                 # build the images here, ~5-10 min once (or pull CI's: DIT_DEV_TAG=develop)
 ditx build && ditx test --integration
 ditx                       # no arguments: interactive command builder (TUI)
 ```

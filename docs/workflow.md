@@ -56,9 +56,9 @@ flowchart LR
 3. Merging to `develop` makes it the source of `:develop` images, which test robots build and run.
 4. A release PR `develop → main` is what `:stable` is built from. Competition robots run
    `tag = stable` (or a pinned `vX.Y.Z`) from `config/robots.ini`.
-   CI publishes no images: each robot builds its own from its shell checkout
-   (`git pull && ditx sync && ditx image --target runtime --tag stable`, tutorial 14), then
-   `ditx up -r white` restarts on them.
+   After the checks pass, CI publishes the images to GHCR (`:develop`, `:stable`,
+   `:vX.Y.Z`, amd64 + arm64), so `ditx up -r white --pull` updates a robot. A version that is
+   not published (a feature branch) is built on the robot instead (tutorial 14).
 5. Pin the domain versions in `ditx.repos` on the release commit. Shell tag + that file
    = the whole robot software, reproducible.
 
