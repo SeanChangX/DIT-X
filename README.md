@@ -9,7 +9,7 @@
 
 [![CI](https://github.com/SeanChangX/DIT-X/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/SeanChangX/DIT-X/actions/workflows/ci.yml)
 [![Docs](https://github.com/SeanChangX/DIT-X/actions/workflows/docs.yml/badge.svg?branch=develop)](https://seanchangx.github.io/DIT-X/)
-[![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-22314E?logo=ros)](https://docs.ros.org/en/humble/)
+[![ROS 2 Humble | Jazzy](https://img.shields.io/badge/ROS%202-Humble%20%7C%20Jazzy-22314E?logo=ros)](https://docs.ros.org/en/humble/)
 [![Docker](https://img.shields.io/badge/runs%20in-Docker-2496ED?logo=docker&logoColor=white)](docker/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
