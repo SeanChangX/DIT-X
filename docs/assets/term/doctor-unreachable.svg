@@ -60,7 +60,7 @@
 <text x="26.4" y="263.5" textLength="33.6" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-1"> git</text>
 <text x="18" y="281.7" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-12">!</text>
 <text x="26.4" y="281.7" textLength="705.6" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-1"> arm64 emulation (qemu binfmt)  → optional, only `ditx shell --arch arm64` needs it:</text>
-<text x="18" y="299.9" textLength="588" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-1">        docker run --privileged --rm tonistiigi/binfmt --install arm64</text>
+<text x="18" y="299.9" textLength="588" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-1">        sudo apt install qemu-user-static</text>
 <text x="18" y="318.1" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-11">✓</text>
 <text x="26.4" y="318.1" textLength="109.2" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-1"> ditx on PATH</text>
 <text x="18" y="336.3" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t1b6ea3-12">!</text>
