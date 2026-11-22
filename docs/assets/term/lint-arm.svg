@@ -18,7 +18,7 @@
 <text x="51.6" y="136.1" textLength="865.2" lengthAdjust="spacingAndGlyphs" class="t9a964d-1">domains/arm/src/arm_bringup/test/test_config.py:3:1: I001 [*] Import block is un-sorted or un-formatted</text>
 <text x="51.6" y="154.3" textLength="319.2" lengthAdjust="spacingAndGlyphs" class="t9a964d-1">[*] 2 fixable with the `--fix` option.</text>
 <text x="18" y="172.5" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-2">✓</text>
-<text x="26.4" y="172.5" textLength="218.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-1"> shellcheck     11 scripts</text>
+<text x="26.4" y="172.5" textLength="218.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-1"> shellcheck     12 scripts</text>
 <text x="18" y="190.7" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-2">✓</text>
 <text x="26.4" y="190.7" textLength="176.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-1"> contract       valid</text>
 <text x="18" y="208.9" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="t9a964d-2">✓</text>

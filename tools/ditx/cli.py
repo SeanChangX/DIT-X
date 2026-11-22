@@ -908,12 +908,14 @@ def cmd_test(ws, args):
 
 
 def count_files(ws, targets):
-    """(C++ files in the targets, shell scripts incl. docker/ and infra/) for the dry-run plan."""
+    """(C++ files in the targets, shell scripts incl. docker/, infra/ and .github/) for the
+    dry-run plan."""
     cpp = shf = 0
-    for t in [*targets, 'docker', 'infra']:
+    extra = ('docker', 'infra', '.github')
+    for t in [*targets, *extra]:
         for dirpath, dirnames, files in os.walk(os.path.join(ws.root, t)):
             dirnames[:] = [d for d in dirnames if d != 'build' and not d.startswith('.')]
-            if t not in ('docker', 'infra'):
+            if t not in extra:
                 cpp += sum(f.endswith(('.cpp', '.hpp', '.h', '.cc')) for f in files)
             shf += sum(f.endswith('.sh') or dirpath.endswith('tools/shell') for f in files)
     return cpp, shf + 1  # + install.sh
@@ -970,7 +972,8 @@ def cmd_lint(ws, args):
         "\\( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' -o -name '*.cc' \\) -print"
     )
     find_sh = (  # + the shell rc of `ditx shell` and the root install.sh
-        f"find {paths} {ws.root}/docker {ws.root}/infra {ws.root}/install.sh -path '*/build' "
+        f'find {paths} {ws.root}/docker {ws.root}/infra {ws.root}/.github {ws.root}/install.sh '
+        "-path '*/build' "
         "-prune -o -type f \\( -name '*.sh' -o -path '*tools/shell/*' \\) -print"
     )
     gen = f'{ws.root}/base/eurobot_common/scripts/gen_contract.py'

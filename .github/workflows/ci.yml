@@ -70,17 +70,39 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: ./.github/actions/setup
+          fetch-depth: 0   # the scope check diffs against the base
+      # A docs-only change into develop (docs/, mkdocs.yml, *.md) cannot break a build: the
+      # steps are skipped, but the job itself runs, so the matrix expands and the required
+      # check "build-test (humble)" reports success. (A job-level `if` would skip the job
+      # before the matrix expands and leave the required check pending forever.) PRs into
+      # main, pushes to main and release tags always run everything.
+      - name: Scope
+        id: scope
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          INTO_DEVELOP: ${{ (github.event_name == 'pull_request' && github.base_ref == 'develop') || github.ref == 'refs/heads/develop' }}
+        run: |
+          run=true
+          if [[ "$INTO_DEVELOP" == true ]] && .github/scripts/docs-only.sh "$BASE" "$GITHUB_SHA"; then
+            run=false
+            echo "::notice::docs-only change: build and tests skipped (docs.yml checks the docs)"
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+      - if: steps.scope.outputs.run == 'true'
+        uses: ./.github/actions/setup
         with:
           sync-token: ${{ secrets.DIT_SYNC_TOKEN }}
-      - run: bin/ditx ci build
-      - run: bin/ditx ci test
+      - if: steps.scope.outputs.run == 'true'
+        run: bin/ditx ci build
+      - if: steps.scope.outputs.run == 'true'
+        run: bin/ditx ci test
       - name: arm64 (cross compiled, what arm64 robots get from ditx deploy)
+        if: steps.scope.outputs.run == 'true'
         run: |
           bin/ditx image --target cross --tag ci
           bin/ditx ci cross
       - name: Upload test results
-        if: always()
+        if: always() && steps.scope.outputs.run == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-results-${{ matrix.ros_distro }}
@@ -114,8 +136,7 @@ jobs:
           BEFORE: ${{ github.event.before }}
         run: |
           publish=true
-          if [[ "$GITHUB_REF" == refs/heads/develop ]] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
-             && ! git diff --name-only "$BEFORE" "$GITHUB_SHA" | grep -qvE '^(docs/|mkdocs\.yml$)|\.md$'; then
+          if [[ "$GITHUB_REF" == refs/heads/develop ]] && .github/scripts/docs-only.sh "$BEFORE" "$GITHUB_SHA"; then
             publish=false
             echo "::notice::docs-only push: images not rebuilt"
           fi
