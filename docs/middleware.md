@@ -10,6 +10,7 @@ Every cross-domain topic therefore names one of the profiles in `contract.yaml`:
 | `sensor` | poses, scans, detections, heartbeats | `best_effort` + `keep_last 1`: always the newest sample. A reliable stream retransmits old samples and delays the new ones behind them. |
 | `state` | "current value" topics (startup status, navigation status) | `reliable` + `transient_local`: a node that starts late still gets the latest value immediately. |
 | `command` | goals, mission commands | `reliable`, small queue: must not be dropped. |
+| `stream` | high-rate streams read by third-party nodes (odometry for nav2) | `reliable`, depth 10: nav2 subscribes reliable, and a reliable subscriber never matches a `best_effort` publisher. |
 
 Compatibility: a `reliable` subscriber does **not** match a `best_effort` publisher, and a
 `transient_local` subscriber does not match a `volatile` publisher. Using the generated

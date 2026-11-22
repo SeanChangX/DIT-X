@@ -120,8 +120,9 @@ ditx test --integration
 
 1. `docker/docker-bake.hcl`：在 `DOMAINS` 加入 `arm`。
 2. `docker/compose.yaml`：複製 `vision:` 區段並改為 `arm`（`profiles: [arm]`、`EUROBOT_CONTAINER: arm`，image `eurobot-arm`）。
-3. 執行 `ditx image`，建置出 `eurobot-arm:local`。
-4. `config/robots.ini`：在需要執行機械手臂的機器人的 `profiles` 加入 `arm`。
+3. `.github/workflows/ghcr-cleanup.yml`：在 `packages` 加入 `eurobot-arm`，CI 發佈的舊版本才會被定期清理。
+4. 執行 `ditx image`，建置出 `eurobot-arm:local`。
+5. `config/robots.ini`：在需要執行機械手臂的機器人的 `profiles` 加入 `arm`。
 
 以上都屬於 shell repo 的修改，請與 `contract.yaml` 的變更合併為一個 PR 送出（`feat(base)!: add the arm domain`）。
 
