@@ -4,7 +4,7 @@
 // compile_commands.json (from `ditx index`) resolve both inside and outside.
 {
   "name": "eurobot dev",
-  "image": "ghcr.io/seanchangx/eurobot-dev:local",   // ditx image --target dev
+  "image": "ghcr.io/seanchangx/eurobot-dev:develop",   // published by CI; ditx image --target dev builds :local
   "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
   "workspaceFolder": "${localWorkspaceFolder}",
   "runArgs": ["--network=host", "--ipc=host"],

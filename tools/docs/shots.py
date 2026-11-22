@@ -855,7 +855,7 @@ def machine_subs(ws_root):
 
 DETERMINISTIC_SUBS = [
     (r'\d{8}-\d{6}', '20261115-160000'),  # log file names
-    (r'(eurobot-(?:dev|cross):)[\w.-]+', r'\1local'),  # DIT_DEV_TAG of the caller
+    (r'(eurobot-(?:dev|cross):)[\w.-]+', r'\1develop'),  # DIT_DEV_TAG of the caller
 ]
 
 
@@ -1013,7 +1013,7 @@ def run_tmux(cmd, cwd, env, cols, rows, keys, timeout=60):
 
 
 def dev_image_present(env):
-    tag = env.get('DIT_DEV_TAG') or os.environ.get('DIT_DEV_TAG') or 'local'
+    tag = env.get('DIT_DEV_TAG') or os.environ.get('DIT_DEV_TAG') or 'develop'
     image = f'ghcr.io/seanchangx/eurobot-dev:{tag}'
     r = subprocess.run(['docker', 'image', 'inspect', image], capture_output=True)
     return r.returncode == 0

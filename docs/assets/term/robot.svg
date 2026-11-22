@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="876" height="118.6" viewBox="0 0 876 118.6" xml:space="preserve" role="img" aria-label="$ ditx robot">
-<style>.tb2c274 text{font-family:'JetBrains Mono', 'Cascadia Code', 'DejaVu Sans Mono', monospace;font-size:14px;white-space:pre;font-variant-ligatures:none}.tb2c274-0{fill:#00d7ff;font-weight:700}.tb2c274-1{fill:#dcdeef}.tb2c274-2{fill:#8a8a8a}</style>
-<defs><linearGradient id="tb2c274-ramp" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#d70000"/><stop offset="0.17" stop-color="#ff005f"/><stop offset="0.33" stop-color="#ff00af"/><stop offset="0.5" stop-color="#af5fff"/><stop offset="0.67" stop-color="#5f5fff"/><stop offset="0.83" stop-color="#00afff"/><stop offset="1" stop-color="#00d7ff"/></linearGradient><clipPath id="tb2c274-clip"><rect width="876" height="118.6" rx="10"/></clipPath></defs>
-<g class="tb2c274" clip-path="url(#tb2c274-clip)">
+<style>.tab6cc8 text{font-family:'JetBrains Mono', 'Cascadia Code', 'DejaVu Sans Mono', monospace;font-size:14px;white-space:pre;font-variant-ligatures:none}.tab6cc8-0{fill:#00d7ff;font-weight:700}.tab6cc8-1{fill:#dcdeef}.tab6cc8-2{fill:#8a8a8a}</style>
+<defs><linearGradient id="tab6cc8-ramp" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#d70000"/><stop offset="0.17" stop-color="#ff005f"/><stop offset="0.33" stop-color="#ff00af"/><stop offset="0.5" stop-color="#af5fff"/><stop offset="0.67" stop-color="#5f5fff"/><stop offset="0.83" stop-color="#00afff"/><stop offset="1" stop-color="#00d7ff"/></linearGradient><clipPath id="tab6cc8-clip"><rect width="876" height="118.6" rx="10"/></clipPath></defs>
+<g class="tab6cc8" clip-path="url(#tab6cc8-clip)">
 <rect width="876" height="118.6" fill="#0e0f1d"/>
 <rect width="876" height="36" fill="#171829"/>
-<rect y="34" width="876" height="2" fill="url(#tb2c274-ramp)" opacity="0.85"/>
+<rect y="34" width="876" height="2" fill="url(#tab6cc8-ramp)" opacity="0.85"/>
 <circle cx="20" cy="18.0" r="6" fill="#ff5f57"/><circle cx="40" cy="18.0" r="6" fill="#febc2e"/><circle cx="60" cy="18.0" r="6" fill="#28c840"/>
 <text x="438" y="22.5" text-anchor="middle" fill="#8a8db0" font-size="13">~/DIT-X</text>
-<text x="18" y="63.3" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="tb2c274-0">$</text>
-<text x="26.4" y="63.3" textLength="92.4" lengthAdjust="spacingAndGlyphs" class="tb2c274-1"> ditx robot</text>
-<text x="18" y="81.5" textLength="604.8" lengthAdjust="spacingAndGlyphs" class="tb2c274-2">ROBOT  HOST   ARCH   DOMAIN ID  PROFILES                             TAG</text>
-<text x="18" y="99.7" textLength="621.6" lengthAdjust="spacingAndGlyphs" class="tb2c274-1">sim    local  amd64  42         main,navigation,localization,vision  local</text>
+<text x="18" y="63.3" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="tab6cc8-0">$</text>
+<text x="26.4" y="63.3" textLength="92.4" lengthAdjust="spacingAndGlyphs" class="tab6cc8-1"> ditx robot</text>
+<text x="18" y="81.5" textLength="604.8" lengthAdjust="spacingAndGlyphs" class="tab6cc8-2">ROBOT  HOST   ARCH   DOMAIN ID  PROFILES                             TAG</text>
+<text x="18" y="99.7" textLength="638.4" lengthAdjust="spacingAndGlyphs" class="tab6cc8-1">sim    local  amd64  42         main,navigation,localization,vision  develop</text>
 </g>
 <rect x="0.5" y="0.5" width="875" height="117.6" rx="9.5" fill="none" stroke="#2b2d48"/>
 </svg>

@@ -29,6 +29,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
  && apt-get update && apt-get install -y --no-install-recommends \
       ros-${ROS_DISTRO}-rmw-cyclonedds-cpp tzdata \
  && rosdep update --rosdistro ${ROS_DISTRO} \
+ # a copy any user can read: ditx runs containers as your own uid, whose HOME has no cache
+ && mkdir -p /etc/ros/rosdep-home && cp -r /root/.ros/rosdep /etc/ros/rosdep-home/ \
+ && chmod -R a+rX /etc/ros/rosdep-home \
  # noble images ship an "ubuntu" user on uid 1000; replace it with ours
  && (userdel -r ubuntu 2>/dev/null || true) \
  && useradd -m -u 1000 -s /bin/bash dit

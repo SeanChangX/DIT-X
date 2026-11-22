@@ -49,14 +49,16 @@ ditx list
 
 ### 2. 準備 image
 
-image 可以在你的電腦上建置，第一次約需 5–10 分鐘，之後只有 Dockerfile 或相依套件改變時才需要重建：
+CI 會把 `develop` 的 image 發佈到 GHCR（`ghcr.io/seanchangx/eurobot-*:develop`，amd64 與 arm64），所以**不需要自己建置**：第一次執行 `ditx build` 時會自動 pull dev image（約 1 GB），`ditx up -r sim` 也會自動 pull runtime image。
+
+只有在你的分支修改了 Dockerfile 或新增相依套件（`package.xml` 的 `<depend>`）時，才需要在本機建置。`ditx build` 會先檢查 dev image 是否缺少你需要的相依套件，缺少時會直接提示這一步：
 
 ```bash
-ditx image          # 建 base、dev、cross 與 4 個 domain 的 runtime image（tag: local）
+ditx image                      # 建 base、dev、cross 與 4 個 domain 的 runtime image（tag: local），約 5–10 分鐘
+DIT_DEV_TAG=local ditx build    # 用自己建的 dev image 建置
 ```
 
-!!! tip "不想在本機建置"
-    CI 會把 `develop` 的 image 發佈到 GHCR。在 `.env` 設定 `DIT_DEV_TAG=develop`，`ditx build` 就會直接 pull dev image，不必執行 `ditx image`。修改 Dockerfile 或相依套件時，仍需改回 `local` 並在本機建置。
+要一直使用自己建置的 image，在 `.env` 設定 `DIT_DEV_TAG=local`，並把 `config/robots.ini` 中 sim 的 `tag` 改成 `local`。
 
 ```text
 ▸ images  humble · linux/amd64 → ghcr.io/seanchangx/eurobot-*:local
