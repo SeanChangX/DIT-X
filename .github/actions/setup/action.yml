@@ -9,7 +9,9 @@ inputs:
     required: false
     default: ''
   build-dev-image:
-    description: Build the dev image from this commit (false = pull DIT_DEV_IMAGE)
+    description: >-
+      Build the dev image from this commit (true), pull DIT_DEV_IMAGE (false),
+      or skip it (none: the job builds its own images, e.g. publish)
     required: false
     default: 'true'
 runs:
@@ -30,8 +32,8 @@ runs:
     - name: Dev image
       shell: bash
       run: |
-        if [[ "${{ inputs.build-dev-image }}" == true ]]; then
-          bin/ditx image --target dev --tag ci
-        else
-          docker pull "$DIT_DEV_IMAGE"
-        fi
+        case "${{ inputs.build-dev-image }}" in
+          true) bin/ditx image --target dev --tag ci ;;
+          none) ;;
+          *) docker pull "$DIT_DEV_IMAGE" ;;
+        esac
