@@ -7,6 +7,14 @@
            DIT-X · Eurobot workspace · build, test, deploy
 ```
 
+[![CI](https://github.com/SeanChangX/DIT-X/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/SeanChangX/DIT-X/actions/workflows/ci.yml)
+[![Docs](https://github.com/SeanChangX/DIT-X/actions/workflows/docs.yml/badge.svg?branch=develop)](https://seanchangx.github.io/DIT-X/)
+[![ROS 2 Humble](https://img.shields.io/badge/ROS%202-Humble-22314E?logo=ros)](https://docs.ros.org/en/humble/)
+[![Docker](https://img.shields.io/badge/runs%20in-Docker-2496ED?logo=docker&logoColor=white)](docker/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+![ditx TUI: pick a command, toggle its options, see the exact command line](docs/assets/term/tui-build-dry-run.svg)
+
 This is the **shell repo** of the Eurobot software. It holds the tooling, CI/CD, images and the
 shared interfaces that every team builds on. The team code lives in domain repos
 (`Eurobot-Main`, `Eurobot-Navigation`, `Eurobot-Localization`, `Eurobot-Vision`) that
