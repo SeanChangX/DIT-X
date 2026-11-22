@@ -14,13 +14,13 @@ host = local
 arch = amd64
 domain_id = 42
 profiles = main,navigation,localization,vision
-tag = local
+tag = develop
 discovery = localhost
 ```
 
 - `host = local`：狀態存放在工作區的 `.sim-robot/`，不需要 SSH
 - `discovery = localhost`：DDS 只在本機探索 node，不會與實驗室網路上的實體機器人互相干擾
-- `tag = local`：使用你在 [02](02-first-build.md) 以 `ditx image` 建置的 image
+- `tag = develop`：使用 CI 發佈的 `develop` image（第一次會自動 pull）；改成 `local` 則使用你以 `ditx image` 建置的 image
 
 ## 前置條件
 

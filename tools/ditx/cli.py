@@ -575,6 +575,46 @@ def colcon_errors(lines):
     return keep[-40:] or lines[-25:]
 
 
+def check_dev_deps(ws, args, arch, domains):
+    """Fail early, with the fix, when the dev image lacks a dependency of this checkout.
+
+    The dev image installs the rosdep keys of the domains it was built from. A pulled
+    image (DIT_DEV_TAG=develop) predates a package.xml change on your branch; colcon
+    would then fail with an obscure "could not find package". Images older than the
+    readable rosdep cache skip the check."""
+    if cross_compiles(arch) or not domains:
+        return
+    paths = ' '.join(shlex.quote(p) for p in [f'{ws.root}/base', *map(ws.domain_path, domains)])
+    script = (
+        'H=/etc/ros/rosdep-home; [ -d "$H/rosdep" ] || exit 0\n'
+        'source /opt/ros/$ROS_DISTRO/setup.bash\n'
+        f'ROS_HOME=$H rosdep check --rosdistro $ROS_DISTRO --ignore-src -q --from-paths {paths}'
+        ' 2>&1'
+    )
+    r = dev_run(
+        ws,
+        args,
+        script,
+        arch=arch,
+        plan=[('deps', 'would check the dev image has every rosdep key')],
+    )
+    if r.returncode == 0:
+        return
+    missing = [x for x in (r.stdout or '').splitlines() if x.strip()][-12:]
+    build = 'ditx image --target dev'
+    fix = (
+        f'{build}  (dependencies changed since it was built)'
+        if ws.dev_image().endswith(':local')
+        else f'{build}, then DIT_DEV_TAG=local ditx build  (or set DIT_DEV_TAG=local in .env;'
+        ' the published image only has the dependencies of develop)'
+    )
+    raise Fail(
+        f'the dev image {ws.dev_image()} lacks dependencies of this checkout:\n'
+        + '\n'.join(f'  {x}' for x in missing)
+        + f'\n  Build your own: {fix}'
+    )
+
+
 def cmd_build(ws, args):
     arch = args.arch or native_arch()
     domains = pick_domains(ws, args.domains) if (args.domains or not args.base) else []
@@ -628,6 +668,7 @@ def cmd_build(ws, args):
         built.append(d)
     if args.packages and not built and not args.base:
         raise Fail(f'none of {args.packages} found in {", ".join(domains)}')
+    check_dev_deps(ws, args, arch, built)
     secs = Sections(colcon_status, colcon_built, colcon_errors)
     t0 = time.monotonic()
     r = dev_run(ws, args, '\n'.join(sh), arch=arch, mem_gb=mem, on_line=secs, plan=plan)
@@ -2228,10 +2269,15 @@ def cmd_doctor(ws, args):
     if not args.json:
         ui.info(f'build budget: {workers} colcon workers x make -j{mj}, container RAM cap {mem} GB')
     img = ws.dev_image()
+    local = img.endswith(':local')
+    have = ok_cmd('docker', 'image', 'inspect', img)
     check(
-        f'dev image {img}',
-        ok_cmd('docker', 'image', 'inspect', img),
-        'ditx image --target dev  (or docker pull it)',
+        f'dev image {img}' + ('' if have or local else ' (not pulled yet)'),
+        have,
+        'ditx image --target dev'
+        if local
+        else 'ditx build pulls it the first time (or: docker pull)',
+        warn_only=not local,  # a published image is pulled on demand
     )
     check(
         f'domains synced: {", ".join(ws.synced_domains()) or "none"}',
