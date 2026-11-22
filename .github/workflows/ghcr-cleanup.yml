@@ -1,0 +1,37 @@
+# Weekly GHCR retention for the images ci.yml publishes. Every push leaves a sha-<commit> tag
+# and, once :develop moves on, an untagged index; this keeps the registry to what is useful:
+#   kept forever   develop, stable, vX.Y.Z
+#   kept           the 10 newest other tags (sha-*) per image
+#   deleted        older sha-* tags and untagged images that no tagged image references
+# The action skips the platform manifests and attestations a multi-arch image still points to,
+# then validates that every remaining multi-arch image is complete.
+# Run it by hand with dry-run to see what it would delete: Actions → ghcr-cleanup → Run workflow.
+name: ghcr-cleanup
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'   # Sundays 03:00 UTC (11:00 in Taiwan)
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Only log what would be deleted
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          packages: eurobot-base,eurobot-dev,eurobot-cross,eurobot-main,eurobot-navigation,eurobot-localization,eurobot-vision
+          exclude-tags: develop,stable,v*
+          keep-n-tagged: 10
+          delete-untagged: true
+          validate: true
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}

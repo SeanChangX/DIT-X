@@ -145,14 +145,14 @@ class Workspace:
     def dev_image(self):
         return (
             self.setting('DIT_DEV_IMAGE')
-            or f'{self.registry}/eurobot-dev:{self.setting("DIT_DEV_TAG", "local")}'
+            or f'{self.registry}/eurobot-dev:{self.setting("DIT_DEV_TAG", "develop")}'
         )
 
     def cross_image(self):
         """dev image + arm64 sysroot: builds for arm64 on an amd64 machine (docker/cross)."""
         return (
             self.setting('DIT_CROSS_IMAGE')
-            or f'{self.registry}/eurobot-cross:{self.setting("DIT_DEV_TAG", "local")}'
+            or f'{self.registry}/eurobot-cross:{self.setting("DIT_DEV_TAG", "develop")}'
         )
 
     @property

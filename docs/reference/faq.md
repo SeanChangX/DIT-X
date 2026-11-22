@@ -18,11 +18,23 @@
     ```
 
 ??? question "`dev image ghcr.io/seanchangx/eurobot-dev:local is not built yet`"
-    image 都在你的電腦上建置，第一次使用前要先建好（約 5–10 分鐘）：
+    你設定了 `DIT_DEV_TAG=local`（使用自己建置的 image），但還沒建置。建置一次即可（約 5–10 分鐘）：
 
     ```bash
     ditx image
     ```
+
+    不需要修改 Dockerfile 或相依套件時，刪掉 `.env` 中的 `DIT_DEV_TAG`，改用 CI 發佈的 image。
+
+??? question "`the dev image ... lacks dependencies of this checkout`"
+    你的分支新增了相依套件，但 CI 發佈的 dev image 是依照 `develop` 建置的，還沒有這些套件。改用自己建置的 image：
+
+    ```bash
+    ditx image --target dev
+    DIT_DEV_TAG=local ditx build
+    ```
+
+    分支合併進 `develop` 後，CI 發佈的新 image 就會包含這些套件。
 
     `cross image ... is not built yet`（`ditx build --arch arm64`）同理，執行 `ditx image --target cross`。
 

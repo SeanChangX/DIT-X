@@ -13,7 +13,7 @@
 <text x="34.8" y="81.5" textLength="378" lengthAdjust="spacingAndGlyphs" class="tbe76fd-3">ditx build --dry-run --domain vision --clangd</text>
 <text x="18" y="99.7" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="tbe76fd-0">▸</text>
 <text x="26.4" y="99.7" textLength="680.4" lengthAdjust="spacingAndGlyphs" class="tbe76fd-1"> build  humble/amd64 · 3 workers × make -j5 · RAM cap 24 GB → build/humble-amd64/</text>
-<text x="18" y="117.9" textLength="672" lengthAdjust="spacingAndGlyphs" class="tbe76fd-2">– dev image      ghcr.io/seanchangx/eurobot-dev:local · RAM cap 24 GB  (dry run)</text>
+<text x="18" y="117.9" textLength="672" lengthAdjust="spacingAndGlyphs" class="tbe76fd-2">– dev image      ghcr.io/seanchangx/eurobot-dev:develop · RAM cap 24 GB  (dry run)</text>
 <text x="18" y="136.1" textLength="747.6" lengthAdjust="spacingAndGlyphs" class="tbe76fd-2">– vision         would colcon build domains/vision → build/humble-amd64/vision  (dry run)</text>
 <text x="18" y="154.3" textLength="604.8" lengthAdjust="spacingAndGlyphs" class="tbe76fd-2">– index          would merge compile_commands.json for clangd  (dry run)</text>
 <text x="18" y="190.7" textLength="8.4" lengthAdjust="spacingAndGlyphs" class="tbe76fd-4">✓</text>

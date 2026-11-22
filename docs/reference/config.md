@@ -40,7 +40,7 @@ host = local
 arch = amd64
 domain_id = 42
 profiles = main,navigation,localization,vision
-tag = local
+tag = develop
 discovery = localhost
 note = everything on this laptop, state under .sim-robot/
 ```
@@ -74,9 +74,9 @@ tag = stable
 # Defaults for ditx. Copy to .env (git-ignored) or run `ditx init` to change them.
 ROS_DISTRO=humble
 REGISTRY=ghcr.io/seanchangx
-# dev image tag: local = built on this machine by `ditx image`; develop = pull the image
-# CI publishes to GHCR from the develop branch (no local build)
-DIT_DEV_TAG=local
+# dev image tag: develop (default) = pull the image CI publishes from the develop branch;
+# local = built on this machine by `ditx image` (after changing the Dockerfile or dependencies)
+DIT_DEV_TAG=develop
 # robot used when -r is not given
 DIT_ROBOT=sim
 # your login on DIT-Scripts robots: your team's account (main, navigation, localization, vision)
@@ -89,7 +89,7 @@ DIT_ROBOT_USER=main
 |---|---|---|
 | `ROS_DISTRO` | `humble` | `humble`（機器人使用的版本）或 `jazzy`（未來支援） |
 | `REGISTRY` | `ghcr.io/seanchangx` | image 名稱的前綴（目前 image 只在本機建置，不會下載） |
-| `DIT_DEV_TAG` | `local` | dev 與 cross image 的 tag；`local` 表示在本機以 `ditx image` 建置。CI 會把 image 發佈到 GHCR（`develop`、`stable`、`vX.Y.Z`），設成 `develop` 就改為直接 pull，不必在本機建置 |
+| `DIT_DEV_TAG` | `develop` | dev 與 cross image 的 tag：`develop` 使用 CI 發佈到 GHCR 的 image（自動 pull）；`local` 使用在本機以 `ditx image` 建置的 image，修改 Dockerfile 或相依套件時使用 |
 | `DIT_DEV_IMAGE` | | 直接指定完整的 dev image 名稱（覆寫上述兩項） |
 | `DIT_ROBOT` | `sim` | 未指定 `-r` 時使用的機器人 |
 | `DIT_ROBOT_USER` | `main` | 你在機器人上的帳號，也就是你的小組（`main`、`navigation`、`localization`、`vision`）；`robots.ini` 中沒寫帳號的 DIT 機器人都用它登入 |
