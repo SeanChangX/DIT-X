@@ -31,6 +31,24 @@ docker run --rm hello-world
 git --version
 ```
 
+!!! tip "建議：使用 containerd image store"
+    Docker Engine 29 起，**新安裝**的 Docker 預設使用 containerd image store；從舊版升級上來的則仍是傳統的 overlay2。執行下列指令檢查，看到 `io.containerd.snapshotter.v1` 就代表已在使用：
+
+    ```bash
+    docker info -f '{{ .DriverStatus }}'
+    ```
+
+    傳統儲存方式的一個 tag 只能存放一種架構，containerd image store 則能同時存放 amd64 與 arm64（多架構 image），也是 Docker 官方建議的方向。`ditx` 在兩種儲存方式下都能正常使用；但如果你經常處理 ARM（Jetson、Raspberry Pi、`ditx shell --arch arm64`），建議切換：
+
+    ```bash
+    docker image prune -af   # 切換後舊 image 會被隱藏但仍佔空間，先清掉（之後會自動重新 pull）
+    sudo python3 -c "import json,os;p='/etc/docker/daemon.json';d=json.load(open(p)) if os.path.exists(p) else {};d.setdefault('features',{})['containerd-snapshotter']=True;json.dump(d,open(p,'w'),indent=4)"
+    sudo systemctl restart docker
+    docker info -f '{{ .DriverStatus }}'   # [[driver-type io.containerd.snapshotter.v1]]
+    ```
+
+    以上會保留 `daemon.json` 中原有的設定（例如 NVIDIA runtime）。containerd 會同時保留壓縮與解壓縮的 layer，佔用的硬碟空間較多。要改回傳統儲存方式，刪除 `daemon.json` 中的 `features` 項目並重新啟動 Docker。詳見 [Docker 文件](https://docs.docker.com/engine/storage/containerd/)。
+
 ### 2. 設定 Git 使用者名稱
 
 部署至機器人時，部署紀錄會記載此名稱，請使用隊友能辨識的名字：
