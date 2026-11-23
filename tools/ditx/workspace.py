@@ -108,6 +108,8 @@ class Robot:
     tag: str = 'stable'
     discovery: str = 'subnet'  # subnet | localhost (keep DDS traffic on this machine)
     note: str = ''
+    # topics of systems outside DIT-X on this robot (e.g. a web dashboard), fnmatch patterns
+    foreign_topics: list = field(default_factory=list)
 
     @property
     def is_local(self):
@@ -209,6 +211,7 @@ class Workspace:
                 tag=s.get('tag', 'stable'),
                 discovery=s.get('discovery', 'subnet'),
                 note=s.get('note', ''),
+                foreign_topics=s.get('foreign_topics', '').replace(',', ' ').split(),
             )
         return out
 

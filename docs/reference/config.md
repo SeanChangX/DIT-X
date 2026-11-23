@@ -54,6 +54,7 @@ note = everything on this laptop, state under .sim-robot/
 | `tag` | | image tag：`stable`（main）、`develop`、`vX.Y.Z`，或 `local`（由 `ditx image` 建置） |
 | `discovery` | | `subnet`（預設）或 `localhost`：DDS 只在本機探索，因此 sim 不會與實驗室中的實體機器人互通 |
 | `note` | | 顯示用的備註 |
+| `foreign_topics` | | 這台機器人上 DIT-X 以外的系統（例如網頁儀表板）使用的 topic，以逗號分隔，可用 `*` 萬用字元。`ditx contract live` 不會把這些未登錄的 topic 標成錯誤；已登錄的 topic 照常檢查 |
 
 實體機器人的範例：
 

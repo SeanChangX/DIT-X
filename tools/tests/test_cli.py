@@ -276,6 +276,28 @@ class RobotTest(CliTestCase):
         self.assertIn('--domains=', first)
         self.assertNotIn('--domains', second)
 
+    def test_foreign_topics_reach_contract_live(self):
+        with open(self.ws.robots_path(), 'a', encoding='utf-8') as f:
+            f.write(
+                '\n[white]\nhost = local\nprofiles = main\n'
+                'foreign_topics = /robot/startup/game_time, /robot/startup/ideal_*\n'
+            )
+        robot = Workspace(self.ws.root).robots()['white']
+        self.assertEqual(
+            robot.foreign_topics, ['/robot/startup/game_time', '/robot/startup/ideal_*']
+        )
+        ok = cli.subprocess.CompletedProcess([], 0, b'OK    8 topics against contract.yaml\n', b'')
+        with (
+            mock.patch.object(cli.Target, 'running_service', return_value='main'),
+            mock.patch.object(cli.subprocess, 'run', return_value=ok) as run,
+        ):
+            rc, _, err = self.run_cli('contract', 'live', '-r', 'white')
+        self.assertEqual(rc, 0, err)
+        cmd = ' '.join(map(str, run.call_args.args[0]))
+        self.assertIn(
+            "--ignore='/robot/startup/game_time,/robot/startup/ideal_*'", cmd
+        )  # quoted: *
+
     def test_add_warns_when_the_domain_id_differs_from_the_hostname(self):
         rc, _, err = self.run_cli(
             'robot', 'add', 'white', '--host', 'DIT-2026-11', '--domain-id', '12'

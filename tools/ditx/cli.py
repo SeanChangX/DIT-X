@@ -1729,10 +1729,14 @@ def cmd_contract(ws, args):
                 check=False,
             )
 
-        r = check(f' --domains={",".join(robot.profiles)}')
+        flags = f' --domains={",".join(robot.profiles)}'
+        if robot.foreign_topics:
+            flags += f' --ignore={shlex.quote(",".join(robot.foreign_topics))}'
+        r = check(flags)
         if r.returncode and 'unrecognized arguments' in (r.stdout or '') + (r.stderr or ''):
-            # contract_check ships in the image: one from before --domains checks every domain
-            ui.warn(f'the image on {robot.name} predates --domains: checking every domain')
+            # contract_check ships in the image: an older one knows neither --domains nor
+            # --ignore, so it checks every domain and every topic
+            ui.warn(f'the image on {robot.name} predates --domains/--ignore: checking everything')
             r = check('')
         result = [x for x in r.stdout.splitlines() if x.startswith(('OK', 'FAIL'))]
         if args.dry_run:

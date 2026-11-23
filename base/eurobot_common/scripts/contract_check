@@ -11,6 +11,7 @@ expect), `everything` = every registered topic.
 Run on a robot (inside any domain container):  ros2 run eurobot_common contract_check
 """
 import argparse
+import fnmatch
 import os
 import sys
 import time
@@ -30,8 +31,12 @@ def main():
                     help='check only what these domains own: topics they publish (and "*") '
                          'and unregistered topics in their areas (/robot/<area>/, owners from '
                          'contract.yaml, plus /robot/<domain>/); default: everything')
+    ap.add_argument('--ignore', default='', metavar='P1,P2',
+                    help='unregistered topics to leave alone (fnmatch patterns): the topics of '
+                         'systems outside DIT-X on this robot, e.g. a web dashboard')
     a = ap.parse_args()
     domains = {d for d in a.domains.split(',') if d}
+    ignore = [p for p in a.ignore.split(',') if p]
 
     def owned(t):
         return not domains or t.get('publisher') == '*' or t.get('publisher') in domains
@@ -77,6 +82,8 @@ def main():
             continue
         if domains and name not in registered and not mine(name):
             continue  # someone else's area (another domain, or a stack outside DIT-X)
+        if name not in registered and any(fnmatch.fnmatchcase(name, p) for p in ignore):
+            continue  # declared foreign on this robot (robots.ini foreign_topics)
         if name not in registered:
             problems.append(f'unregistered topic {name} {types}')
         elif types != [registered[name]]:
