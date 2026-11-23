@@ -261,18 +261,19 @@ class RobotTest(CliTestCase):
             self.assertTrue(os.path.isfile(os.path.join(ROOT, 'docker', name)), name)
 
     def test_contract_live_retries_without_domains_on_an_older_image(self):
+        # argparse reports on stderr: Target.sh must hand it back (it once returned stdout only)
         old = cli.subprocess.CompletedProcess(
-            [], 2, 'contract_check: error: unrecognized arguments: --domains=main', ''
+            [], 2, b'', b'contract_check: error: unrecognized arguments: --domains=main\n'
         )
-        ok = cli.subprocess.CompletedProcess([], 0, 'OK    8 topics against contract.yaml', '')
+        ok = cli.subprocess.CompletedProcess([], 0, b'OK    8 topics against contract.yaml\n', b'')
         with (
             mock.patch.object(cli.Target, 'running_service', return_value='main'),
-            mock.patch.object(cli.Target, 'sh', side_effect=[old, ok]) as sh,
+            mock.patch.object(cli.subprocess, 'run', side_effect=[old, ok]) as run,
         ):
             rc, _, err = self.run_cli('contract', 'live', '-r', 'sim')
         self.assertEqual(rc, 0, err)
         self.assertIn('predates --domains', err)
-        first, second = (c.args[0] for c in sh.call_args_list)
+        first, second = (' '.join(map(str, c.args[0])) for c in run.call_args_list)
         self.assertIn('--domains=', first)
         self.assertNotIn('--domains', second)
 

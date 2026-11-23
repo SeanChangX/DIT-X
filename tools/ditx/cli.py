@@ -1229,7 +1229,9 @@ class Target:
             if not ui.VERBOSE:
                 ui.show_tail(out.splitlines())
             raise Fail(f'on {self.label}: exit code {r.returncode}')
-        return subprocess.CompletedProcess(cmd, r.returncode, r.stdout.decode(errors='replace'), '')
+        return subprocess.CompletedProcess(
+            cmd, r.returncode, r.stdout.decode(errors='replace'), r.stderr.decode(errors='replace')
+        )
 
     def compose(self, rest):
         return (

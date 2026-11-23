@@ -52,7 +52,9 @@ flowchart LR
 1. Branch from `develop`, commit with [Conventional Commits](https://www.conventionalcommits.org/)
    (`feat(localization): fuse lidar beacons`). The `commit-msg` hook checks it
    (`pre-commit install --hook-type commit-msg`).
-2. Open a PR. CI runs lint → build → test. Review starts only when it is green.
+2. Open a PR. CI runs lint → build → test, then starts the robot stack the way a robot runs it
+   (runtime images, subnet discovery, a uid without a home) and checks it against the contract.
+   Review starts only when it is green.
 3. Merging to `develop` makes it the source of `:develop` images, which test robots build and run.
 4. A release PR `develop → main` is what `:stable` is built from. Competition robots run
    `tag = stable` (or a pinned `vX.Y.Z`) from `config/robots.ini`.
