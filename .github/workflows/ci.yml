@@ -96,6 +96,22 @@ jobs:
         run: bin/ditx ci build
       - if: steps.scope.outputs.run == 'true'
         run: bin/ditx ci test
+      # The stack the way a robot runs it, which the sim and the integration test do not: the
+      # runtime images, subnet discovery (docker/cyclonedds.xml) and containers running as the
+      # runner's uid 1001, which has no passwd entry in the image (like DIT-Scripts accounts).
+      - name: Robot stack (subnet discovery, uid without a home)
+        if: steps.scope.outputs.run == 'true' && matrix.ros_distro == 'humble'
+        run: |
+          bin/ditx image --target runtime --tag ci
+          bin/ditx robot add ci --host local --domain-id 77 --tag ci
+          trap 'bin/ditx down -r ci --yes' EXIT
+          bin/ditx up -r ci
+          for try in 1 2 3 4 5 6; do   # the domains need a few seconds to come up
+            bin/ditx contract live -r ci && exit 0
+            sleep 10
+          done
+          for d in main navigation localization vision; do bin/ditx logs -r ci -d "$d" | tail -20; done
+          exit 1
       - name: arm64 (cross compiled, what arm64 robots get from ditx deploy)
         if: steps.scope.outputs.run == 'true'
         run: |
